@@ -1,0 +1,432 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+<meta charset="utf-8">
+<meta author="Jeffrey Ganulin">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+<title>Dice</title>
+<link rel="apple-touch-icon" sizes="57x57" href="favicons/apple-touch-icon-57x57.png"><link rel="apple-touch-icon" sizes="114x114" href="favicons/apple-touch-icon-114x114.png"><link rel="apple-touch-icon" sizes="72x72" href="favicons/apple-touch-icon-72x72.png"><link rel="apple-touch-icon" sizes="144x144" href="favicons/apple-touch-icon-144x144.png"><link rel="apple-touch-icon" sizes="60x60" href="favicons/apple-touch-icon-60x60.png"><link rel="apple-touch-icon" sizes="120x120" href="favicons/apple-touch-icon-120x120.png"><link rel="apple-touch-icon" sizes="76x76" href="favicons/apple-touch-icon-76x76.png"><link rel="apple-touch-icon" sizes="152x152" href="favicons/apple-touch-icon-152x152.png"><link rel="apple-touch-icon" sizes="180x180" href="favicons/apple-touch-icon-180x180.png"><meta name="apple-mobile-web-app-title" content="Dice"><link rel="shortcut icon" href="favicons/favicon.ico"><link rel="icon" type="image/png" href="favicons/favicon-192x192.png" sizes="192x192"><link rel="icon" type="image/png" href="favicons/favicon-160x160.png" sizes="160x160"><link rel="icon" type="image/png" href="favicons/favicon-96x96.png" sizes="96x96"><link rel="icon" type="image/png" href="favicons/favicon-16x16.png" sizes="16x16"><link rel="icon" type="image/png" href="favicons/favicon-32x32.png" sizes="32x32"><meta name="msapplication-TileColor" content="#00aba9"><meta name="msapplication-TileImage" content="favicons/mstile-144x144.png"><meta name="msapplication-config" content="favicons/browserconfig.xml"><meta name="application-name" content="Dice">
+<style>
+html {
+	-webkit-text-size-adjust: none;
+	width: 100%;
+	height: 100%;
+	font-family: Arial, sans-serif;
+}
+#page {
+	width: 100%;
+	margin: 0 auto;
+}
+#heading {
+	text-align: center;
+	/*margin: 0.5% auto;*/
+}
+h1 {
+	margin: 1% auto 0 auto;
+	font-size: 200%;
+}
+h3 {
+	margin: .25% auto;
+	font-size: 100%;
+}
+#headerButtons {
+	height: 100%;
+	width: 100%;
+	margin: 1% auto;
+	text-align: center;
+}
+#showInstructions {
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+	/*width: 45%;*/
+	height: 3em;
+	background-color: yellow;
+	cursor: pointer;
+	text-align: center;
+	display: inline-block;
+}
+#resetBtn {
+	display: inline-block;
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+	/*width: 45%;*/
+	height: 3em;
+	cursor: pointer;
+	background-color: #FF736F;
+}
+/*When optimizing UX, incorporate transitions*/
+/*#resetBtn:hover {
+	background-color: red;
+}*/
+
+table {
+	width: 100%;
+}
+td, #theader th {
+	border: 1px solid black;
+	cursor: default;
+}
+th {
+	cursor: default;
+}
+#cellTable {
+	margin: 1% auto 0 auto;
+	width: 60%;
+}
+#cellTable tr td {
+	padding: 0.25%;
+}
+
+/*Container fixed to bottom of page that holds dice and controls.*/
+#diceHold {
+	position: fixed;
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 6em;
+	border: 1px solid black;
+	background-color: yellow;
+}
+.dice {
+	width: 90%;
+	margin: 0 auto;
+	border-collapse: separate;
+	border-spacing: 10px 10px;
+}
+.die {
+	width: auto;
+	height: auto;
+	padding: 0.25%;
+	text-align: center;
+	background-color: white;
+	cursor: pointer;
+}
+.hold {
+	background-color: #FF736F;
+}
+#space {
+	margin: .5% auto;
+	height: 8em;
+	width: 100%;
+}
+#rollBtn {
+	height: 3em;
+	float: left;
+	margin-left: 1%;
+	width: 56%;
+	background-color: blue;
+	color: white;
+	cursor: pointer;
+}
+#playBtn {
+	height: 3em;
+	float: right;
+	margin-right: 1.5%;
+	width: 40%;
+	background-color: gray;
+	color: white;
+	cursor: pointer;
+}
+.controlsReady {
+	background-color: blue;
+}
+
+.valueCell {
+	cursor: pointer;
+}
+.valueCell:hover, .die:hover {
+	outline: 1px solid black;
+	box-shadow: 0 0 3px 3px lightblue; /*Add -webkit*/
+}
+button, .cell, .valueCell, .dice {
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+.disabled, .disabled:hover {
+	background-color: white;
+	cursor: default;
+	outline: 0;
+	box-shadow: none; /*Add -webkit*/
+}
+
+.nonValue {
+	background-color: #C8C8C8;
+}
+
+/*Possibly start hidden, and show on #showInstructions.click()*/
+/*Instructions Column styles; allows toggling of display via $("#showInstructions").click()
+Functionality/implementation may be changed. Add vendor prefixes*/
+.instructionsColumn {
+	display: default;
+}
+/*Possibly remove*/
+.instructionsColumn + td, .hiddenInstruction + td {
+	text-align: center;
+	/*white-space: nowrap;*/
+}
+.hiddenInstruction {
+	width: 0;
+	display: none;
+}
+
+/*Wrapper for the game over/final score screen; functions as modal dialog*/
+#gameOverBox {
+	visibility: hidden;
+	position: fixed;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	text-align: center;
+	z-index: 1000;
+	background-color: #606060; /*Fallback for IE*/
+	background-color: rgba(96, 96, 96, 0.80);
+}
+/*Styles game over screen content*/
+#gameOverContent {
+	margin: 10% auto;
+	padding: 5%;
+	width: 75%;
+	text-align: center;
+	border: 2px solid black;
+	-webkit-border-radius: 15px;
+	-moz-border-radius: 15px;
+	border-radius: 15px;
+	background-color: white;
+}
+#gameOverContent h2 {margin-top: 0;}
+#gameOverBoxResetBtn {
+	-webkit-border-radius: 30px;
+	-moz-border-radius: 30px;
+	border-radius: 30px;
+	width: 45%;
+	height: 3em;
+	cursor: pointer;
+	background-color: #FF736F;
+}
+
+#instructionsBox {
+	display: block;
+	width: 75%;
+	margin: 1% auto;
+	border: 2px solid black;
+	padding: 2%; /*Remove left padding to left-align list*/
+	background-color: yellow;
+	cursor: default;
+}
+#instructionsBox ol {
+	list-style-position: inside;
+	padding-left: 0;
+}
+#instructionsBox h3, #instructionsBox em { text-align: center; }
+</style>
+<script src="fastclick.min.js"></script>
+<script>
+if ('addEventListener' in document) document.addEventListener('DOMContentLoaded', function() {FastClick.attach(document.body);}, false);
+</script>
+</head>
+<body>
+<div id="page">
+<div id="content">
+
+<div id="heading">
+<h1>Dice</h1>
+<h3>By Jeffrey Ganulin</h3>
+</div>
+
+<div id="headerButtons">
+<button id="showInstructions">Show/Hide Instructions</button>
+<button id="resetBtn">New Game</button>
+<button id="testLoad">Test Load</button>
+<button id="genFiveOfKind">5 of kind</button>
+</div>
+
+<div id="instructionsBox">
+<h3>How to Play</h3>
+<ol>
+<li>Roll the dice by pressing the Roll Dice button. You may roll up to 3 times per turn.<br/>
+After each roll, you can press on a die to "hold" it; the dice you hold will not change during your next roll.</li>
+<li>Once the dice are rolled, select a move to play from the "Score" column on the right.<br/>
+Choose the move whose rule (shown in the "How to Score" column) best matches your dice to get the most points.</li>
+<li>If you choose the wrong move or want to change your move, just select another "Score" cell.<br/>
+The score you'll get for playing a move will be shown in the move's "Score" cell.</li>
+<li>Once you've chosen your move, press "Play" to finish the turn.</li>
+<li>The dice will reset, and you'll be able to roll and select your next move again.</li>
+<li>Each "Score" cell must be filled to complete the game. If you're running out of moves and your dice will only score 0 points for a remaining move, you must take 0 points for that move.<br/>
+So choose your moves wisely, try to get the best overall score, and have fun!</li>
+<li>If you need to reset your game before the game is complete, press New Game.</li>
+<li>Press "Instructions" to hide/show this box as well as the "How to Score/Points" column.</li>
+<li>Any feedback or problems you encounter can be reported to <a href="mailto:admin@jgproductions.x10.bz">admin@jgproductions.x10.bz</a></li>
+</ol>
+</div>
+
+<table id="cellTable">
+<tr id="theader">
+<th>Move</th><!--Rule-->
+<th class="instructionsColumn">How to Score/Points</th>
+<th>Score</th>
+</tr>
+
+<tr>
+<th><em>Upper Section</em></th>
+</tr>
+
+<tr>
+<td>Ones</td>
+<td class="cell instructionsColumn">Add all Ones</td>
+<td class="cell valueCell upperSectionCell" id="ones"> </td>
+</tr>
+
+<tr>
+<td>Twos</td>
+<td class="cell instructionsColumn">Add all Twos</td>
+<td class="cell valueCell upperSectionCell" id="twos"> </td>
+</tr>
+
+<tr>
+<td>Threes</td>
+<td class="cell instructionsColumn">Add all Threes</td>
+<td class="cell valueCell upperSectionCell" id="threes"> </td>
+</tr>
+
+<tr>
+<td>Fours</td>
+<td class="cell instructionsColumn">Add all Fours</td>
+<td class="cell valueCell upperSectionCell" id="fours"> </td>
+</tr>
+
+<tr>
+<td>Fives</td>
+<td class="cell instructionsColumn">Add all Fives</td>
+<td class="cell valueCell upperSectionCell" id="fives"> </td>
+</tr>
+
+<tr>
+<td>Sixes</td>
+<td class="cell instructionsColumn">Add all Sixes</td>
+<td class="cell valueCell upperSectionCell" id="sixes"> </td>
+</tr>
+
+<tr>
+<td>Subtotal</td>
+<td class="cell instructionsColumn">Total of Upper Section not including Bonus</td>
+<td class="cell nonValue" id="upSub"> </td>
+</tr>
+
+<tr>
+<td>Bonus<br/>(If Subtotal is at least 63)</td>
+<td class="cell instructionsColumn">35 pts.</td>
+<td class="cell nonValue" id="upBonus"> </td>
+</tr>
+
+<tr>
+<td>Total</td>
+<td class="cell instructionsColumn">Total Score of Upper Section</td>
+<td class="cell nonValue upperTotal"> </td>
+</tr>
+
+<tr>
+<th><em>Lower Section</em></th>
+</tr>
+
+<tr>
+<td>Three of a Kind</td>
+<td class="cell instructionsColumn">Three of the same number - Add total of all dice</td>
+<td class="cell valueCell lowerSectionCell" id="threeOfKind"> </td>
+</tr>
+
+<tr>
+<td>Four of a Kind</td>
+<td class="cell instructionsColumn">Four of the same number - Add total of all dice</td>
+<td class="cell valueCell lowerSectionCell" id="fourOfKind"> </td>
+</tr>
+
+<tr>
+<td>Full House</td>
+<td class="cell instructionsColumn">Pair and three of another number (1, 1, 4, 4, 4) - 25 pts.</td>
+<td class="cell valueCell lowerSectionCell" id="fullHouse"> </td>
+</tr>
+
+<tr>
+<td>Small Straight</td>
+<td class="cell instructionsColumn">Four numbers in sequence (1, 2, 3, 4) - 35 pts.</td>
+<td class="cell valueCell lowerSectionCell" id="smallStraight"> </td>
+</tr>
+
+<tr>
+<td>Large Straight</td>
+<td class="cell instructionsColumn">Five numbers in sequence (1, 2, 3, 4, 5) - 40 pts.</td>
+<td class="cell valueCell lowerSectionCell" id="largeStraight"> </td>
+</tr>
+
+<tr>
+<td>Five of a Kind</td>
+<td class="cell instructionsColumn">All dice have the same number - 50 pts.</td>
+<td class="cell valueCell lowerSectionCell" id="fiveOfKind"> </td>
+</tr>
+
+<tr>
+<td>Five of a Kind Bonus</td>
+<td class="cell instructionsColumn">Description - 100pts. each</td>
+<td class="cell nonValue" id="fiveOfKindBonus"> </td>
+</tr>
+
+<tr>
+<td>Chance</td>
+<td class="cell instructionsColumn">Add total of all dice</td>
+<td class="cell valueCell lowerSectionCell" id="chance"> </td>
+</tr>
+
+<tr>
+<td>Total of Upper Section</td>
+<td class="cell instructionsColumn">Total Score of Upper Section</td>
+<td class="cell nonValue upperTotal"> </td>
+</tr>
+
+<tr>
+<td>Total of Lower Section</td>
+<td class="cell instructionsColumn">Total Score of Lower Section</td>
+<td class="cell nonValue" id="lowerTotal"> </td>
+</tr>
+
+<tr>
+<td>Grand Total</td>
+<td class="cell instructionsColumn">Total of All Points</td>
+<td class="cell nonValue" id="grandTotal"> </td>
+</tr>
+</table>
+
+<div id="space"></div>
+
+<div id="diceHold">
+<table class="dice">
+<tr>
+<td id="die1" class="die">0</td>
+<td id="die2" class="die">0</td>
+<td id="die3" class="die">0</td>
+<td id="die4" class="die">0</td>
+<td id="die5" class="die">0</td>
+</tr>
+</table>
+<button id="rollBtn">Roll (3 remaining)</button>
+<button id="playBtn">Play</button>
+</div>
+
+<!--Final score/game over screen; Hidden initially and shown at end of game via JS-->
+<div id="gameOverBox"> <!--Holds gameOverBox content, initially hidden, functions as modal dialog-->
+<div id="gameOverContent">
+<h2>Game Over</h2>
+<p>You scored:&nbsp;<span id="gameOverBoxScore">0</span>&nbsp;points.</p>
+<button id="gameOverBoxResetBtn">New Game</button>
+</div>
+</div>
+
+</div>
+</div>
+
+<script src="jquery-3.6.0.min.js"></script>
+<!-- <script src="logicCompat.js"></script> -->
+<script src="DiceJQ.js"></script>
+</body>
+</html>
