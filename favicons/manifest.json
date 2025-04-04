@@ -1,0 +1,16 @@
+{
+    "name": "Dice",
+    "short_name": "Dice",
+    "description": "Dice is a Yahtzee-like game where you roll dice to score points. The game is played with five dice and the goal is to get the highest score possible by rolling combinations of dice.",
+    "lang": "en-US",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#00aba9",
+    "theme_color": "#00aba9",
+    "icons": [
+        { "src": "/favicons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+        { "src": "/favicons/favicon-192x192.png", "sizes": "192x192", "type": "image/png" },
+        { "src": "/favicons/favicon-16x16.png", "sizes": "16x16", "type": "image/png" },
+        { "src": "/favicons/favicon-32x32.png", "sizes": "32x32", "type": "image/png" }
+    ]
+}
