@@ -1,0 +1,566 @@
+:root {
+    /* Light theme colors */
+    --background-color: #e9e9e9;
+    --text-color: #333;
+    --primary-color: #f07619;
+    --secondary-color: #2e53cc;
+    --accent-color: #4e4b4b;
+    --instructions-background-color: #f9f9f9;
+    --table-background-color: #fff;
+    --table-heading-background-color: #f4f2f2;
+    --table-border-color: #b0aeae;
+    --table-cell-hover-color: rgba(0, 0, 0, 0.1);
+    --dice-controls-background-color: #e9e4e4;
+    --dice-background: #ffffff;
+    --dice-shadow: rgba(0, 0, 0, 0.7);
+    --dice-hold: #2e53cc;
+}
+
+[data-theme="dark"] {
+    /* Dark theme colors */
+    --background-color: #1a2636;
+    --text-color: #f5f5f5;
+    --primary-color: #296a9f;
+    --secondary-color: #f07619;
+    --accent-color: #4e4b4b;
+    --instructions-background-color: #263747;
+    --table-background-color: #2c3e50;
+    --table-heading-background-color: #1e2a38;
+    --table-border-color: #64748b;
+    --table-cell-hover-color: #394f66;
+    --dice-controls-background-color: #263747;
+    --dice-background: #ffffff;
+    --dice-shadow: rgba(0, 0, 0, 0.5);
+    --dice-hold: #f07619;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+    font-family: 'Roboto', Arial, sans-serif;
+    font-size: 16px;
+    line-height: 1.6;
+    scroll-behavior: smooth;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    cursor: default;
+}
+
+h1 {
+    font-size: 2.5rem;
+    color: var(--primary-color);
+}
+
+h3 {
+    font-size: 1rem;
+    color: var(--text-color);
+}
+
+button {
+    border: none;
+    outline: none;
+    border-radius: 1.75rem;
+    cursor: pointer;
+    font-weight: bold;
+    padding: 0.5rem;
+    background-color: var(--accent-color);
+}
+
+#page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    width: 90%;
+    margin-bottom: 1rem;
+}
+
+#title {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    flex-grow: 1;
+    margin-right: 1rem;
+}
+
+#headerButtons {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+
+#headerButtons button {
+    height: 2.5rem;
+    width: 6rem;
+    font-size: 0.8rem;
+    line-height: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--text-color);
+}
+
+#headerButtons button svg {
+    display: none;
+}
+
+.resetBtn svg {
+    fill: white;
+    stroke: white;
+}
+
+#darkModeToggle {
+    background-color: var(--accent-color);
+    padding: 0.5rem;
+}
+
+#instructionsBox {
+    background-color: var(--instructions-background-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+
+#instructionsBoxHeader {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#instructionsBox ol {
+    margin-left: 1.5rem;
+}
+
+#cellTable {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--table-border-color);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background-color: var(--table-background-color);
+}
+
+.bottomMargin {
+    margin-bottom: 25vh;
+}
+
+/* Constrain the width of the table when the player has hidden the instructions column */
+#cellTable[data-instructions-hidden="true"] {
+    width: 75%;
+}
+
+#cellTable th,
+#cellTable td {
+    border: 1px solid var(--table-border-color);
+    padding: 0.75rem;
+}
+
+.headerRow th,
+.headerRow td {
+    background-color: var(--table-heading-background-color);
+    font-weight: bold;
+}
+
+.sectionLabel {
+    text-align: left;
+    font-size: 0.9rem;
+}
+
+/* The playable cells (ex. Ones, Full House, etc.) */
+.valueCell {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+
+
+/* When a playable cell is clicked on but yet to be played */
+.valueCell.selected {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* When a playable cell has been played */
+.valueCell.disabled {
+    background-color: var(--table-background-color);
+    cursor: not-allowed;
+}
+
+/* Non-playable cells (ex. subtotal, bonus, totals) */
+.nonValue {
+    background-color: var(--table-heading-background-color);
+    font-weight: bold;
+    cursor: default;
+}
+
+.valueCell,
+.nonValue {
+    text-align: center;
+}
+
+/* Hold the dice and roll/play buttons */
+#diceControlsContainer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    max-height: 25vh;
+    width: 100%;
+    background-color: var(--dice-controls-background-color);
+    border-top: 1px solid var(--primary-color);
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+/* Dice container */
+.dice {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    column-gap: 0.5rem;
+    width: 100%;
+    min-height: 6rem;
+    /* margin-bottom: 0.5em; */
+}
+
+.die {
+    width: 5em;
+    background-color: var(--dice-background);
+    border-radius: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 2px 5px var(--dice-shadow);
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Hidden backing for each die that represents its value */
+.die span {
+    display: none;
+}
+
+.die.hold {
+    outline: 1px solid var(--primary-color);
+    background-color: var(--dice-hold);
+}
+
+.die.hold svg {
+    fill: white;
+}
+
+.die.rolling {
+    animation: roll 1s ease-in-out 3;
+}
+
+@keyframes roll {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    50% {
+        transform: rotate(360deg);
+    }
+
+    100% {
+        transform: rotate(0deg);
+    }
+}
+
+/* Contains the Roll and Play buttons */
+#diceControls {
+    display: flex;
+    justify-content: center;
+    width: 90%;
+    gap: 1rem;
+    align-items: flex-end;
+    margin-bottom: 1rem;
+}
+
+#rollBtn,
+#playBtn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+    max-width: 15rem;
+    height: 2.5rem;
+    border-radius: 2rem;
+    /* font-size: 0.9rem; */
+}
+
+/* When the player has rolls left, style the Roll button */
+#rollBtn.rollsAvailable {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* When the player has selected a playable cell after rolling */
+#playBtn.playAvailable {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+/* A message showing the player's score and New Game btn
+above the #cellTable, if they close the Game Over & High Scores
+modals without yet starting a new game. It allows the player to 
+check the game board to see how it composed their score. */
+#gameOverMessage {
+    text-align: center;
+    margin: 1rem 0;
+}
+
+/* Game Over/high scores modals that are shown at the end of the game */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* Content within / above the modal overlay */
+.modalContent {
+    background-color: var(--background-color);
+    border-radius: 15px;
+    padding: 2rem;
+    text-align: center;
+    max-height: 80vh;
+    max-width: 1000px;
+    width: 90%;
+    overflow-y: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Header of modal content consists of the heading and closeBtn */
+.modalHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: space-between;
+    margin-bottom: 1rem;
+}
+
+.modalHeader h2 {
+    font-size: 2rem;
+    color: var(--primary-color);
+    flex-grow: 1;
+    text-align: left;
+}
+
+/* Holds Close button and other modal controls */
+.modalControls {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modalCloseBtn {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    border-radius: 0;
+    height: 2rem;
+    width: 2rem;
+}
+
+/* The name input shown on the Game Over modal */
+#highScoreForm {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#highScoreNameInput {
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid var(--table-border-color);
+    background-color: var(--instructions-background-color);
+    color: var(--text-color);
+}
+
+#highScoreSaveBtn {
+    background-color: var(--primary-color);
+    color: white;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+#highScoresContainer {
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+#deleteAllHighScoresBtn {
+    border-radius: 0;
+    cursor: pointer;
+    height: 2rem;
+    width: 2rem;
+}
+
+#highScoresTable {
+    background-color: var(--table-background-color);
+    border: 1px solid var(--table-border-color);
+    width: 100%;
+    border-collapse: collapse;
+    padding: 0.5rem;
+}
+
+#highScoresTable tr {
+    border-bottom: 1px solid var(--table-border-color);
+}
+
+.deleteHighScoreBtn {
+    padding: 0.5rem;
+    margin: 0.5rem;
+    border-radius: 0;
+    cursor: pointer;
+}
+
+#deleteAllHighScoresBtn svg rect {
+    fill: white;
+}
+
+#deleteAllHighScoresBtn svg {
+    fill: var(--accent-color);
+    height: 1rem;
+    width: 1rem;
+}
+
+@media screen and (max-width: 1200px) {
+    header {
+        width: 100%;
+        flex-direction: column;
+        align-items: center;
+        row-gap: 1rem;
+    }
+
+    .bottomMargin {
+        margin-bottom: 25vh;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    header {
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        row-gap: 1rem;
+    }
+
+    #cellTable[data-instructions-hidden] {
+        width: 100%;
+    }
+
+    .bottomMargin {
+        margin-bottom: 30vh;
+    }
+}
+
+@media screen and (max-width: 576px) {
+    #headerButtons {
+        flex-grow: 1;
+    }
+
+    #headerButtons button {
+        height: 2.5rem;
+        width: 3rem;
+    }
+
+    #headerButtons button svg {
+        display: block;
+        height: 1rem;
+        width: 1rem;
+    }
+
+    #headerButtons button span {
+        display: none;
+    }
+
+    .die {
+        width: 4rem;
+    }
+}
+
+@media screen and (pointer: fine) and (hover: hover) {
+    #headerButtons button:hover {
+        background-color: var(--secondary-color);
+    }
+
+    .valueCell:hover {
+        background-color: var(--table-cell-hover-color);
+        outline: 2px solid var(--primary-color);
+    }
+
+    .valueCell.selected:hover {
+        background-color: var(--primary-color);
+        outline: 2px solid var(--primary-color);
+    }
+
+    .die:hover {
+        transform: scale(1.05);
+        outline: 1px solid var(--secondary-color);
+        box-shadow: 0 1px 5px 3px hsla(0, 0%, 0%, 0.2);
+    }
+
+    #rollBtn.rollsAvailable:hover {
+        outline: 2px solid var(--text-color);
+    }
+
+    #playBtn.playAvailable:hover {
+        outline: 2px solid var(--text-color);
+    }
+
+    .modalCloseBtn:hover {
+        background-color: var(--secondary-color);
+        color: white;
+    }
+
+    #deleteAllHighScoresBtn:hover,
+    .deleteHighScoreBtn:hover {
+        background-color: var(--primary-color);
+        color: white;
+    }
+}
