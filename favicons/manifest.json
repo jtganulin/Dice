@@ -1,7 +1,7 @@
 {
-    "name": "Dice",
-    "short_name": "Dice",
-    "description": "Dice is a Yahtzee-like game where you roll dice to score points. The game is played with five dice and the goal is to get the highest score possible by rolling combinations of dice.",
+    "name": "Five Dice Frenzy",
+    "short_name": "Five Dice Frenzy",
+    "description": "Five Dice Frenzy is a Yahtzee-like game where you roll dice to score points. The game is played with five dice and the goal is to get the highest score possible by rolling combinations of dice.",
     "lang": "en-US",
     "start_url": "/",
     "display": "standalone",
