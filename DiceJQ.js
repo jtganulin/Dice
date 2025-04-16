@@ -94,20 +94,21 @@ $(document).ready(function() {
     function toggleInstructions() {
         $("#instructionsBox").toggle();
 
-        // Update the data attribute on the cellTable, which adjusts the
-        // table width to account for the instructions column
-        // TODO: Add a toggle button that shows/hides the instructions column
-        /* $(".instructionsColumn").toggle();
-        if ($("#cellTable").attr("data-instructions-hidden") === "true") {
-            $("#cellTable").attr("data-instructions-hidden", "false");
-        } else {
-            $("#cellTable").attr("data-instructions-hidden", "true");
-        } */
-
         // Save the preference in localStorage
         if (window.localStorage) {
             const instructionsHidden = $("#instructionsBox").is(":hidden");
             localStorage.setItem("instructionsHidden", instructionsHidden);
+        }
+    }
+
+    function toggleHowToScoreColumn() {
+        // Update the data attribute on the cellTable, which adjusts the
+        // table width to account for the instructions column
+        $(".instructionsColumn").toggle();
+        if ($("#cellTable").attr("data-instructions-hidden") === "true") {
+            $("#cellTable").attr("data-instructions-hidden", "false");
+        } else {
+            $("#cellTable").attr("data-instructions-hidden", "true");
         }
     }
 
@@ -429,6 +430,7 @@ $(document).ready(function() {
     }
 
     $("#page").on("click", ".resetBtn", reset);
+    $("#toggleHowToScoreColumnBtn").on("click", toggleHowToScoreColumn);
     $(".die").on("click", toggleHold);
     $(".upperSectionCell").on("click", getUpperSectionValues);
     $(".lowerSectionCell").on("click", getLowerSectionValues);
@@ -457,7 +459,7 @@ $(document).ready(function() {
             }
             // Add the new score
             highScores.push({
-                id: Date.now(), // Unique ID for the score
+                id: Date.now(),
                 name,
                 date: new Date().toLocaleString(),
                 score: grandTotal
@@ -505,8 +507,7 @@ $(document).ready(function() {
         const instructionsHidden = localStorage.getItem("instructionsHidden");
         if (instructionsHidden === "true") {
             $("#instructionsBox").hide();
-            // $(".instructionsColumn").hide();
-            $("#cellTable").attr("data-instructions-hidden", "true");
+            // $("#cellTable").attr("data-instructions-hidden", "true");
         }
     }
 

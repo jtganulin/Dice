@@ -202,8 +202,6 @@ header {
     transition: background-color 0.2s;
 }
 
-
-
 /* When a playable cell is clicked on but yet to be played */
 .valueCell.selected {
     background-color: var(--primary-color);
